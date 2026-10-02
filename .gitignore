@@ -1,0 +1,21 @@
+# macOS
+.DS_Store
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Java / Maven / Gradle build output
+*.class
+target/
+build/
+out/
+.gradle/
+
+# Local configuration and logs
+.env
+.env.*
+!.env.example
+*.log
