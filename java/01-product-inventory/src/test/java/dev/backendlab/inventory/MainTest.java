@@ -22,12 +22,12 @@ class MainTest {
                      new PrintStream(output, true, StandardCharsets.UTF_8)) {
             try {
                 System.setIn(new ByteArrayInputStream(
-                        "2\n1\n".getBytes(StandardCharsets.UTF_8)));
+                        "2\n4\n".getBytes(StandardCharsets.UTF_8)));
                 System.setOut(testOut);
 
                 assertDoesNotThrow(() -> Main.main(new String[0]));
                 assertTrue(output.toString(StandardCharsets.UTF_8)
-                        .contains("현재 재고 목록"));
+                        .contains("상품목록을 조회합니다."));
             } finally {
                 System.setIn(originalIn);
                 System.setOut(originalOut);
