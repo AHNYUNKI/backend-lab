@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>SQL 실습 안내 · backend-lab</title>
+<link rel="stylesheet" href="../learning-assets/learning.css">
+<script src="../learning-assets/learning.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main">본문으로 건너뛰기</a>
+<header class="topbar"><div class="topbar-inner"><a class="brand" href="../index.html" aria-label="backend-lab 학습 시작"><span class="brand-icon" aria-hidden="true">b.</span>backend-lab<span class="brand-sub">학습 노트</span></a><a class="home-link" href="../index.html">전체 문서 <span aria-hidden="true">↗</span></a></div></header>
+<div id="top" class="page-layout">
+<aside class="sidebar"><details class="contents" open><summary>이 문서의 목차 <span aria-hidden="true">⌄</span></summary><nav aria-label="이 문서의 목차"><a href="#database--sql-실습-위치">SQL 실습 안내</a></nav></details><details class="document-list"><summary>다른 학습 문서 <span aria-hidden="true">⌄</span></summary><nav aria-label="다른 학습 문서"><a  href="../README.html"><span>시작 안내</span>저장소와 학습 환경</a>
+<a  href="../java/01-product-inventory/README.html"><span>JAVA · 01</span>상품·재고 실습</a>
+<a  href="../java/01-product-inventory/LEARNING.html"><span>JAVA · 회고</span>상품·재고 실습 회고</a>
+<a  href="../spring/01-product-api/README.html"><span>SPRING · 01</span>첫 상품 API 실습</a>
+<a  href="../spring/01-product-api/REQUIREMENTS.html"><span>SPRING · 요구사항</span>상품 API 요구사항</a>
+<a aria-current="page" href="README.html"><span>DATABASE</span>SQL 실습 안내</a></nav></details></aside>
+<main id="main" class="document" tabindex="-1"><div class="document-meta"><span class="eyebrow">DATABASE</span><a class="source-link" href="README.md">Markdown 원문 ↗</a></div><div class="source-notice">기존 문서의 내용을 그대로 옮긴 HTML입니다. 구현 상태와 버전 설명은 원문 작성 시점을 기준으로 합니다.</div><article class="markdown-source"><section class="doc-intro"><h1 id="database--sql-실습-위치">Database — SQL 실습 위치</h1>
+<p>상품·재고 데이터를 SQL로 다룰 때 사용할 폴더입니다.
+아직 데이터베이스 설치, 연결 설정, SQL 정답은 추가하지 않았습니다.</p>
+<p>실습을 시작하면 주제별 폴더에 직접 SQL을 작성합니다. 예시:</p>
+<div class="code-block"><div class="code-toolbar" data-ui><span>text</span><button type="button" class="copy-button" aria-label="text 코드 복사">복사</button></div><pre tabindex="0"><code class="language-text">database/
+└── 01-product-sql/
+    ├── README.md          # 사용할 DB와 실행 방법
+    ├── 01-schema.sql      # 테이블과 제약 조건
+    ├── 02-insert.sql      # 상품 등록
+    ├── 03-select.sql      # 목록과 조건 조회
+    └── 04-update.sql      # 재고 변경
+</code></pre></div>
+<p>기본 키, 자료형, 제약 조건을 먼저 정하고 등록·조회·변경을 검증합니다.
+그다음 트랜잭션과 인덱스를 학습합니다. DB 제품과 버전은 실제 실습을 시작할 때 정합니다.
+접속 비밀번호와 개인 환경 설정은 저장소에 기록하지 않습니다.</p>
+</section></article><nav class="document-bottom" aria-label="문서 이동"><a href="../index.html">← 학습 시작 페이지</a></nav></main>
+</div><footer class="site-footer"><span>backend-lab · 직접 만들고, 검증하고, 기록하기</span><a href="#top">맨 위로 ↑</a></footer>
+<div class="sr-only" id="copy-status" role="status" aria-live="polite"></div>
+</body>
+</html>

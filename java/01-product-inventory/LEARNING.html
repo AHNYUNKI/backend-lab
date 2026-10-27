@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>상품·재고 실습 회고 · backend-lab</title>
+<link rel="stylesheet" href="../../learning-assets/learning.css">
+<script src="../../learning-assets/learning.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main">본문으로 건너뛰기</a>
+<header class="topbar"><div class="topbar-inner"><a class="brand" href="../../index.html" aria-label="backend-lab 학습 시작"><span class="brand-icon" aria-hidden="true">b.</span>backend-lab<span class="brand-sub">학습 노트</span></a><a class="home-link" href="../../index.html">전체 문서 <span aria-hidden="true">↗</span></a></div></header>
+<div id="top" class="page-layout">
+<aside class="sidebar"><details class="contents" open><summary>이 문서의 목차 <span aria-hidden="true">⌄</span></summary><nav aria-label="이 문서의 목차"><a class="depth-2" href="#리팩터링한-이유">리팩터링한 이유</a>
+<a class="depth-2" href="#dto를-따로-만들지-않은-이유">DTO를 따로 만들지 않은 이유</a>
+<a class="depth-2" href="#ai-코드-리뷰로-알게-된-scanner-문제">AI 코드 리뷰로 알게 된 Scanner 문제</a>
+<a class="depth-2" href="#기술-메모">기술 메모</a></nav></details><details class="document-list"><summary>다른 학습 문서 <span aria-hidden="true">⌄</span></summary><nav aria-label="다른 학습 문서"><a  href="../../README.html"><span>시작 안내</span>저장소와 학습 환경</a>
+<a  href="README.html"><span>JAVA · 01</span>상품·재고 실습</a>
+<a aria-current="page" href="LEARNING.html"><span>JAVA · 회고</span>상품·재고 실습 회고</a>
+<a  href="../../spring/01-product-api/README.html"><span>SPRING · 01</span>첫 상품 API 실습</a>
+<a  href="../../spring/01-product-api/REQUIREMENTS.html"><span>SPRING · 요구사항</span>상품 API 요구사항</a>
+<a  href="../../database/README.html"><span>DATABASE</span>SQL 실습 안내</a></nav></details></aside>
+<main id="main" class="document" tabindex="-1"><div class="document-meta"><span class="eyebrow">JAVA · 회고</span><a class="source-link" href="LEARNING.md">Markdown 원문 ↗</a></div><div class="source-notice">기존 문서의 내용을 그대로 옮긴 HTML입니다. 구현 상태와 버전 설명은 원문 작성 시점을 기준으로 합니다.</div><article class="markdown-source"><section class="doc-intro"><h1 id="상품재고-실습-회고">상품·재고 실습 회고</h1>
+</section><section class="doc-section" aria-labelledby="리팩터링한-이유"><h2 id="리팩터링한-이유">리팩터링한 이유</h2>
+<p><code>main</code> 메서드가 점점 무겁고 복잡해지면서 단위 테스트를 작성하기 어려웠다. 코드를 읽기 힘든 부분도 많아 역할을 나누는 방향으로 리팩터링했다. 메서드 이름만 보고도 어떤 기능을 하는지 알 수 있도록 이름을 정리하는 데 신경 썼다.</p>
+</section><section class="doc-section" aria-labelledby="dto를-따로-만들지-않은-이유"><h2 id="dto를-따로-만들지-않은-이유">DTO를 따로 만들지 않은 이유</h2>
+<p><code>findAll()</code>에서는 별도의 DTO를 만들지 않고 <code>Product</code> 객체를 반환하도록 했다. 현재 코드에서 DTO를 추가하고 변환하는 작업은 복잡도를 더 높일 것이라고 판단했다. 이번 구현에서는 구조를 단순하게 유지하는 쪽을 선택했다.</p>
+</section><section class="doc-section" aria-labelledby="ai-코드-리뷰로-알게-된-scanner-문제"><h2 id="ai-코드-리뷰로-알게-된-scanner-문제">AI 코드 리뷰로 알게 된 Scanner 문제</h2>
+<p><code>static Scanner</code>의 문제는 예상하지 못했다. 혼자서는 생각하지 못했을 부분이었지만 AI 코드 리뷰를 통해 알게 되었다. 문제의 원인과 어떤 방식으로 해결할 수 있는지도 함께 알게 되었다.</p>
+</section><section class="doc-section" aria-labelledby="기술-메모"><h2 id="기술-메모">기술 메모</h2>
+<p>아래는 회고와 구분한 현재 코드 기준의 기술 보충이다.</p>
+<ul>
+<li><code>findAll()</code>은 <code>List.copyOf(products)</code>를 반환하므로 반환된 목록에 상품을 추가하거나 삭제할 수 없다. 다만 목록 안의 <code>Product</code> 참조는 공유되므로 상품의 상태까지 읽기 전용이거나 불변인 것은 아니다.</li>
+<li><code>static Scanner</code>는 같은 JVM에서 <code>System.in</code>을 교체한 뒤 다시 실행해도 처음 입력원에 연결된 상태로 남는 문제가 있었다. 현재는 <code>private final Scanner</code> 인스턴스 필드를 생성자에서 초기화해, 새 인스턴스가 생성될 때의 입력원을 사용하도록 했다.</li>
+</ul>
+<p>근거 코드: <a href="https://github.com/AHNYUNKI/backend-lab/commit/8ea655a5eacd21237ea53de2bc0f5b7ed4e32172" class="external-link">8ea655a — 상품 관리 책임을 분리하고 입력 종료 처리를 개선</a></p>
+</section></article><nav class="document-bottom" aria-label="문서 이동"><a href="../../index.html">← 학습 시작 페이지</a></nav></main>
+</div><footer class="site-footer"><span>backend-lab · 직접 만들고, 검증하고, 기록하기</span><a href="#top">맨 위로 ↑</a></footer>
+<div class="sr-only" id="copy-status" role="status" aria-live="polite"></div>
+</body>
+</html>

@@ -3,6 +3,11 @@
 Java부터 Spring, SQL까지 직접 구현하고 테스트하며 배우는 백엔드 실습 저장소입니다.
 각 실습은 독립 프로젝트로 관리합니다. 루트에는 통합 빌드나 멀티모듈 설정이 없습니다.
 
+## 실습 안내
+
+- [순수 Java 상품·재고 실습](java/01-product-inventory/README.md)
+- [Spring 첫 상품 API 실습 — 학습 계획과 시작 방법](spring/01-product-api/README.md)
+
 ## 폴더 구조
 
 ```text

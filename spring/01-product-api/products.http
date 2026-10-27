@@ -1,0 +1,94 @@
+# 구현 전: 아래 /products 경로는 모두 404가 예상됩니다.
+# 각 제목의 상태 코드는 직접 구현을 마친 뒤의 목표입니다.
+# 새 서버에서 위에서부터 순서대로 실행하세요. 다시 등록하면 중복 ID로 409가 납니다.
+@baseUrl = http://127.0.0.1:8080/v1
+
+### 1. 새 상품 등록 → 201, Location: /products/101
+POST {{baseUrl}}/products
+Content-Type: application/json
+
+{"id":101,"name":"노트","price":1000,"stock":10}
+
+### 2. 등록한 상품 조회 → 200, 등록한 값과 동일
+GET {{baseUrl}}/products/101
+Accept: application/json
+
+### 3. 중복 ID → 409, 원래 값 유지
+POST {{baseUrl}}/products
+Content-Type: application/json
+
+{"id":101,"name":"덮어쓰면 안 되는 상품","price":2000,"stock":1}
+
+### 4. 중복 거절 뒤 조회 → 원래 노트/1000/10 유지
+GET {{baseUrl}}/products/101
+Accept: application/json
+
+### 5. 가격·재고 0 → 201
+POST {{baseUrl}}/products
+Content-Type: application/json
+
+{"id":102,"name":"샘플","price":0,"stock":0}
+
+### 6. 0 값 확인 → 200
+GET {{baseUrl}}/products/102
+Accept: application/json
+
+### 7. 음수 가격 → 400
+POST {{baseUrl}}/products
+Content-Type: application/json
+
+{"id":103,"name":"실패 상품","price":-1,"stock":10}
+
+### 8. 음수 재고 → 400
+POST {{baseUrl}}/products
+Content-Type: application/json
+
+{"id":104,"name":"실패 상품","price":1000,"stock":-1}
+
+### 9. 등록 실패한 상품은 없어야 함 → 404
+GET {{baseUrl}}/products/104
+Accept: application/json
+
+### 10. 재고 누락 → 400 (0으로 저장하면 안 됨)
+POST {{baseUrl}}/products
+Content-Type: application/json
+
+{"id":105,"name":"실패 상품","price":1000}
+
+### 11. ID null → 400
+POST {{baseUrl}}/products
+Content-Type: application/json
+
+{"id":null,"name":"실패 상품","price":1000,"stock":10}
+
+### 12. 공백 이름 → 400
+POST {{baseUrl}}/products
+Content-Type: application/json
+
+{"id":106,"name":"   ","price":1000,"stock":10}
+
+### 13. 없는 ID → 404
+GET {{baseUrl}}/products/999
+Accept: application/json
+
+### 14. 숫자가 아닌 ID → 400
+GET {{baseUrl}}/products/abc
+Accept: application/json
+
+### 15. Long 범위 초과 → 400
+GET {{baseUrl}}/products/9223372036854775808
+Accept: application/json
+
+### 16. JSON 문법 오류 → 400 (의도적으로 마지막 쉼표를 남김)
+POST {{baseUrl}}/products
+Content-Type: application/json
+
+{"id":107,"name":"실패 상품","price":1000,"stock":10,}
+
+### 17. 빈 본문 → 400
+POST {{baseUrl}}/products
+Content-Type: application/json
+
+### 18. 서버 재시작 후에만 실행 → 404
+GET {{baseUrl}}/products/101
+Accept: application/json

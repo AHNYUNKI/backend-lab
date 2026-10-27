@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>첫 상품 API 실습 · backend-lab</title>
+<link rel="stylesheet" href="../../learning-assets/learning.css">
+<script src="../../learning-assets/learning.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main">본문으로 건너뛰기</a>
+<header class="topbar"><div class="topbar-inner"><a class="brand" href="../../index.html" aria-label="backend-lab 학습 시작"><span class="brand-icon" aria-hidden="true">b.</span>backend-lab<span class="brand-sub">학습 노트</span></a><a class="home-link" href="../../index.html">전체 문서 <span aria-hidden="true">↗</span></a></div></header>
+<div id="top" class="page-layout">
+<aside class="sidebar"><details class="contents" open><summary>이 문서의 목차 <span aria-hidden="true">⌄</span></summary><nav aria-label="이 문서의 목차"><a class="depth-2" href="#먼저-할-일과-완료-기준">먼저 할 일과 완료 기준</a>
+<a class="depth-2" href="#실행과-intellij-설정">실행과 IntelliJ 설정</a>
+<a class="depth-2" href="#오늘의-순서-기본-4시간--선택-1시간">오늘의 순서: 기본 4시간 + 선택 1시간</a>
+<a class="depth-2" href="#직접-작성할-자리">직접 작성할 자리</a>
+<a class="depth-2" href="#기존-java-실습에서-가져올-것">기존 Java 실습에서 가져올 것</a>
+<a class="depth-2" href="#dto와-검증을-생각할-기준">DTO와 검증을 생각할 기준</a>
+<a class="depth-2" href="#요청-실행과-테스트">요청 실행과 테스트</a>
+<a class="depth-2" href="#범위와-한계">범위와 한계</a>
+<a class="depth-2" href="#선택한-버전과-공식-자료">선택한 버전과 공식 자료</a></nav></details><details class="document-list"><summary>다른 학습 문서 <span aria-hidden="true">⌄</span></summary><nav aria-label="다른 학습 문서"><a  href="../../README.html"><span>시작 안내</span>저장소와 학습 환경</a>
+<a  href="../../java/01-product-inventory/README.html"><span>JAVA · 01</span>상품·재고 실습</a>
+<a  href="../../java/01-product-inventory/LEARNING.html"><span>JAVA · 회고</span>상품·재고 실습 회고</a>
+<a aria-current="page" href="README.html"><span>SPRING · 01</span>첫 상품 API 실습</a>
+<a  href="REQUIREMENTS.html"><span>SPRING · 요구사항</span>상품 API 요구사항</a>
+<a  href="../../database/README.html"><span>DATABASE</span>SQL 실습 안내</a></nav></details></aside>
+<main id="main" class="document" tabindex="-1"><div class="document-meta"><span class="eyebrow">SPRING · 01</span><a class="source-link" href="README.md">Markdown 원문 ↗</a></div><div class="source-notice">기존 문서의 내용을 그대로 옮긴 HTML입니다. 구현 상태와 버전 설명은 원문 작성 시점을 기준으로 합니다.</div><article class="markdown-source"><section class="doc-intro"><h1 id="01-첫-상품-api-실습">01. 첫 상품 API 실습</h1>
+</section><section class="doc-section criteria-section" aria-labelledby="먼저-할-일과-완료-기준"><h2 id="먼저-할-일과-완료-기준">먼저 할 일과 완료 기준</h2>
+<p>IntelliJ에서 <strong>이 폴더 <code>spring/01-product-api</code>를 독립 Maven 프로젝트로 열고 Java 21을 선택</strong>한다. 아래의 <code>mvn test</code>와 <code>mvn spring-boot:run</code>으로 준비 상태부터 확인한다. 그다음 <a href="REQUIREMENTS.html">요구사항</a>을 읽고 <code>web</code> 패키지에 <code>ProductController</code>를 직접 만든다.</p>
+<p>오늘의 목표는 <strong>JSON → Controller → Inventory → HTTP 상태와 JSON 응답</strong>의 흐름을 직접 구현하고 설명하는 것이다.</p>
+<ul>
+<li><input disabled="" type="checkbox"> <code>POST /products</code>로 등록하면 <code>201</code>과 상품 JSON, <code>Location</code>을 반환한다.</li>
+<li><input disabled="" type="checkbox"> <code>GET /products/{id}</code>로 방금 등록한 상품을 조회하면 <code>200</code>과 같은 값이 나온다.</li>
+<li><input disabled="" type="checkbox"> 가격·재고 <code>0</code>은 허용하고, 잘못된 요청 <code>400</code>·없는 ID <code>404</code>·중복 ID <code>409</code>를 구분한다.</li>
+<li><input disabled="" type="checkbox"> HTTP 요청과 중단점으로 값의 이동을 확인하고, 직접 작성한 기능 테스트가 통과한다.</li>
+<li><input disabled="" type="checkbox"> 재시작하면 메모리 데이터가 사라지는 이유와 각 객체의 책임을 설명한다.</li>
+</ul>
+<p><strong>준비된 것은 실행 골격이다.</strong> Controller, Product, Inventory, DTO와 상품 기능 테스트는 아직 없다. 현재 <code>POST /products</code>와 <code>GET /products/{id}</code>는 모두 <strong>404가 예상되는 미구현 경로</strong>다. 기본 컨텍스트 테스트 1개가 통과해도 상품 기능이 완성된 것은 아니다.</p>
+</section><section class="doc-section" aria-labelledby="실행과-intellij-설정"><h2 id="실행과-intellij-설정">실행과 IntelliJ 설정</h2>
+<p>이 README가 있는 폴더에서 실행한다.</p>
+<div class="code-block"><div class="code-toolbar" data-ui><span>bash</span><button type="button" class="copy-button" aria-label="bash 코드 복사">복사</button></div><pre tabindex="0"><code class="language-bash">mvn test
+mvn spring-boot:run
+</code></pre></div>
+<p>서버가 실행된 상태에서 다른 터미널로 준비 상태를 확인한다. 현재는 <strong>HTTP 404</strong>가 나오면 서버에 연결된 것이고, <code>Connection refused</code>는 서버나 포트를 확인해야 한다.</p>
+<div class="code-block"><div class="code-toolbar" data-ui><span>bash</span><button type="button" class="copy-button" aria-label="bash 코드 복사">복사</button></div><pre tabindex="0"><code class="language-bash">curl -i -H 'Accept: application/json' http://127.0.0.1:8080/products/101
+</code></pre></div>
+<p>패키징과 JAR 실행도 가능하다. 두 실행 방법을 동시에 쓰면 같은 포트가 충돌하므로 먼저 기존 서버를 <code>Ctrl+C</code>로 종료한다.</p>
+<div class="code-block"><div class="code-toolbar" data-ui><span>bash</span><button type="button" class="copy-button" aria-label="bash 코드 복사">복사</button></div><pre tabindex="0"><code class="language-bash">mvn package
+java -jar target/product-api-0.1.0.jar
+</code></pre></div>
+<ul>
+<li>IntelliJ <strong>Open</strong>: <code>/Users/ahnyunki/app/backend-lab/spring/01-product-api</code>.</li>
+<li><code>pom.xml</code>을 Maven 프로젝트로 불러오고 Project SDK와 Maven Runner JRE를 <strong>Java 21</strong>로 맞춘다.</li>
+<li>현재 JDK 경로: <code>/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home</code>.</li>
+<li>실행/디버깅 진입점은 <code>ProductApiApplication.main()</code>이다.</li>
+<li>기본 주소는 <code>http://127.0.0.1:8080</code>이다. 8080이 사용 중이면 JAR 실행에 <code>--server.port=8081</code>을 붙이고 HTTP 파일의 <code>baseUrl</code>도 바꾼다.</li>
+<li>첫 빌드에는 Maven Central에서 의존성을 내려받으므로 인터넷 연결이 필요하다. Maven Wrapper 없이 설치된 <code>mvn</code>을 사용한다.</li>
+</ul>
+</section><section class="doc-section" aria-labelledby="오늘의-순서-기본-4시간--선택-1시간"><h2 id="오늘의-순서-기본-4시간--선택-1시간">오늘의 순서: 기본 4시간 + 선택 1시간</h2>
+<p>기본 일정은 <strong>학습 220분 + 휴식 20분 = 240분</strong>이다. 아래 시간은 시작 시각부터의 경과 시간이다.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="학습 내용 표 · 가로로 스크롤할 수 있습니다"><table><thead><tr><th scope="col">경과 시간</th>
+<th scope="col" style="text-align:right">분</th>
+<th scope="col">할 일과 남길 결과</th>
+</tr></thead><tbody><tr><td>00:00–00:35</td>
+<td style="text-align:right">35</td>
+<td>이론: HTTP 메서드·경로·JSON·상태 코드를 읽고 <code>@RestController</code>, <code>@RequestBody</code>, <code>@PathVariable</code>, 생성자 주입의 역할을 한 문장씩 적는다.</td>
+</tr><tr><td>00:35–00:55</td>
+<td style="text-align:right">20</td>
+<td>준비: 테스트와 서버를 실행하고 미구현 경로의 404를 확인한다. Application과 패키지 설명을 읽는다.</td>
+</tr><tr><td>00:55–01:05</td>
+<td style="text-align:right">10</td>
+<td>휴식.</td>
+</tr><tr><td>01:05–02:15</td>
+<td style="text-align:right">70</td>
+<td>직접 코딩: Product/Inventory를 검토해 옮기고 Bean으로 연결한다. 등록 → 단건 조회 → 입력 검증과 상태 코드 순으로 구현한다.</td>
+</tr><tr><td>02:15–02:25</td>
+<td style="text-align:right">10</td>
+<td>휴식.</td>
+</tr><tr><td>02:25–03:05</td>
+<td style="text-align:right">40</td>
+<td>요청 실행·디버깅: <code>products.http</code> 또는 curl로 등록/조회를 실행한다. Controller와 Inventory에 중단점을 걸어 ID와 필드 값을 따라간다.</td>
+</tr><tr><td>03:05–03:45</td>
+<td style="text-align:right">40</td>
+<td>테스트: 등록 후 조회, 0 허용, 중복·없는 ID·음수 및 누락 입력을 자동 검증한다. 각 테스트의 데이터가 섞이지 않게 한다.</td>
+</tr><tr><td>03:45–04:00</td>
+<td style="text-align:right">15</td>
+<td>정리: 완료 체크를 확인하고 실패했던 요청, DTO 선택 이유, 이해한 요청 흐름을 짧게 기록한다.</td>
+</tr></tbody></table></div>
+<p>선택 시간은 <strong>휴식 10분 + 테스트 보강 35분 + 회고 15분 = 60분</strong>이다. 합계는 휴식 포함 5시간이다. 필수 기능이 끝났다면 같은 ID를 재등록한 뒤 원래 값이 보존되는지, 테스트 실행 순서를 바꿔도 통과하는지 보강한다. 오늘은 목록 조회나 재고 변경 API까지 늘릴 필요가 없다.</p>
+</section><section class="doc-section" aria-labelledby="직접-작성할-자리"><h2 id="직접-작성할-자리">직접 작성할 자리</h2>
+<div class="code-block"><div class="code-toolbar" data-ui><span>text</span><button type="button" class="copy-button" aria-label="text 코드 복사">복사</button></div><pre tabindex="0"><code class="language-text">src/main/java/dev/backendlab/productapi/
+├── ProductApiApplication.java       # 준비됨: Spring Boot 진입점
+├── web/package-info.java           # TODO: ProductController, 요청 객체, 필요시 응답 DTO
+└── product/package-info.java       # TODO: Product, Inventory, Bean 등록 방식 선택
+src/main/resources/application.properties
+src/test/java/dev/backendlab/productapi/ProductApiApplicationTests.java
+REQUIREMENTS.md                     # 상태 코드·필드·완료 기준
+products.http                       # 구현 후 순서대로 실행할 요청 예제
+</code></pre></div>
+<p>Application의 하위 패키지에 클래스를 두면 컴포넌트 탐색 범위를 이해하기 쉽다. Inventory를 Spring이 관리할 Bean으로 등록하고 Controller 생성자에서 받는다. <code>@Component</code>와 설정 클래스의 <code>@Bean</code> 중 한 방식을 선택해 이유를 설명해 본다. Service/Repository 인터페이스나 별도 계층은 오늘의 필수 조건이 아니다.</p>
+</section><section class="doc-section" aria-labelledby="기존-java-실습에서-가져올-것"><h2 id="기존-java-실습에서-가져올-것">기존 Java 실습에서 가져올 것</h2>
+<p>원본인 <code>../../java/01-product-inventory</code>는 수정하지 않는다. 기존 코드를 읽고 아래 두 클래스에서 필요한 부분만 <strong>이 프로젝트에 직접 작성하거나 복사한 뒤 package/import를 수정</strong>한다. 원본 프로젝트를 Maven 의존성으로 연결하지 않는다.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="학습 내용 표 · 가로로 스크롤할 수 있습니다"><table><thead><tr><th scope="col">기존 코드</th>
+<th scope="col">오늘 연결할 책임</th>
+<th scope="col">확인할 점</th>
+</tr></thead><tbody><tr><td><a href="../../java/01-product-inventory/src/main/java/dev/backendlab/inventory/shop/Product.java">Product</a></td>
+<td>상품 상태와 가격·재고 규칙</td>
+<td>기존 구현도 가격·재고 0을 허용하고 음수를 거절한다. 생성자가 private이고 팩터리를 사용하므로 HTTP 요청에서 바로 생성된다고 가정하지 않는다.</td>
+</tr><tr><td><a href="../../java/01-product-inventory/src/main/java/dev/backendlab/inventory/Inventory.java">Inventory</a></td>
+<td>등록·중복 확인·ID 조회·메모리 보관</td>
+<td><code>createProduct</code>, <code>existsById</code>, <code>findByProductId</code>를 읽는다. 단건 조회는 없으면 null을 반환하므로 HTTP 404 연결을 결정해야 한다.</td>
+</tr></tbody></table></div>
+<p><code>Main</code>, <code>InventoryConsole</code>, Scanner와 콘솔 출력 클래스는 HTTP 프로젝트에 옮기지 않는다. 저장소는 요청마다 새로 만들지 않아야 등록 후 다음 요청에서 조회할 수 있다.</p>
+</section><section class="doc-section" aria-labelledby="dto와-검증을-생각할-기준"><h2 id="dto와-검증을-생각할-기준">DTO와 검증을 생각할 기준</h2>
+<p>콘솔 실습에서 DTO를 생략해 복잡도를 줄였던 판단은 그 당시 범위에 맞춘 선택이었다. 이번에는 외부 JSON을 Java 값으로 바꾸고 필수 필드를 검증하는 <strong>HTTP 요청 경계</strong>가 생긴다. 작은 요청 객체(예: <code>CreateProductRequest</code>)를 두면 이 역할을 상품 객체의 생성 규칙과 구분하기 쉽다. 응답 DTO는 외부에 보여 줄 필드를 고정할 필요와 추가되는 코드를 비교해 선택한다. DTO를 도입하는 행위 자체가 목표는 아니다.</p>
+<p>Validation 스타터는 요청 검증을 연습할 수 있도록 준비했다. <code>jakarta.validation</code>의 <code>@Valid</code>, <code>@NotNull</code>, <code>@NotBlank</code>, <code>@PositiveOrZero</code>가 각각 무엇을 확인하는지 찾아본다. 누락과 0을 구분하려면 요청 객체의 <code>Long</code>/<code>Integer</code> 같은 참조형과 필수 값 검증의 관계도 확인한다. 도메인에서 가격·재고 규칙을 지키는 책임은 계속 필요하다.</p>
+</section><section class="doc-section" aria-labelledby="요청-실행과-테스트"><h2 id="요청-실행과-테스트">요청 실행과 테스트</h2>
+<p><a href="products.http">products.http</a>는 HTTP Client를 지원하는 IDE에서 실행할 수 있다. 지원하지 않는 환경에서는 터미널로 같은 요청을 보낸다. <strong>아래 201/200은 직접 구현을 마친 뒤의 목표</strong>다.</p>
+<div class="code-block"><div class="code-toolbar" data-ui><span>bash</span><button type="button" class="copy-button" aria-label="bash 코드 복사">복사</button></div><pre tabindex="0"><code class="language-bash">curl -i -X POST http://127.0.0.1:8080/products \
+  -H 'Content-Type: application/json' \
+  -d '{&quot;id&quot;:101,&quot;name&quot;:&quot;노트&quot;,&quot;price&quot;:1000,&quot;stock&quot;:10}'
+curl -i -H 'Accept: application/json' http://127.0.0.1:8080/products/101
+</code></pre></div>
+<p>Controller 진입 시 요청 객체, Inventory 등록 직전의 ID, 조회 후 반환되는 객체를 Debug로 확인한다. 잘못된 JSON은 Controller 메서드에 들어오기 전에 거절될 수 있으므로 HTTP 응답도 함께 본다.</p>
+<p>준비된 <code>contextLoads()</code>는 설정 로딩만 확인한다. 직접 추가할 기능 검증은 <a href="REQUIREMENTS.html#직접-확인할-순서">요구사항의 검증 순서</a>를 따른다. Inventory 규칙은 일반 JUnit 테스트로, HTTP 계약은 Spring Boot의 MockMvc 지원 등으로 확인할 수 있다. 컨텍스트가 재사용되면 메모리 데이터도 남을 수 있으므로 각 테스트가 독립적인 ID/저장소 상태를 갖게 한다. 처음부터 Mockito나 전역 예외 처리 구조를 추가할 필요는 없다.</p>
+</section><section class="doc-section" aria-labelledby="범위와-한계"><h2 id="범위와-한계">범위와 한계</h2>
+<ul>
+<li>저장은 메모리에서만 한다. 서버 재시작 시 모든 상품이 사라지는 것이 오늘의 동작이다.</li>
+<li>요청은 한 번에 하나씩 보내며 정상 흐름을 익힌다. Spring 서버는 여러 요청을 동시에 받을 수 있지만 기존 <code>ArrayList</code>와 중복 확인 후 추가 방식은 동시성 안전성을 보장하지 않는다. 운영 수준의 동시성 처리는 후속 과제다.</li>
+<li>HTTP 400/404/409는 Controller의 명시적인 분기나 <code>ResponseStatusException</code> 등 작은 방식으로 연결해도 된다. <code>@RestControllerAdvice</code>, 공통 오류 계층, 예외 메시지 문자열에 따른 분기는 필수가 아니다.</li>
+<li>목록 조회·재고 변경 API, DB/JPA, 인증·보안, Docker, Lombok, 배포는 후속 학습으로 남긴다.</li>
+</ul>
+</section><section class="doc-section" aria-labelledby="선택한-버전과-공식-자료"><h2 id="선택한-버전과-공식-자료">선택한 버전과 공식 자료</h2>
+<p>2026-10-07 확인 기준, 공식 <a href="https://start.spring.io/metadata/client" class="external-link">Spring Initializr 메타데이터</a>의 안정 기본값인 <strong>Spring Boot 4.1.1</strong>을 사용한다. <a href="https://docs.spring.io/spring-boot/system-requirements.html" class="external-link">공식 시스템 요구사항</a>은 Java 17–26과 Maven 3.6.3 이상을 지원하므로 현재 Java 21·Maven 3.9.16과 호환된다.</p>
+<p>Initializr의 Java 21 / Maven / Spring Web / Validation 선택을 바탕으로 <code>spring-boot-starter-webmvc</code>, <code>spring-boot-starter-validation</code>, 테스트용 <code>spring-boot-starter-webmvc-test</code>만 선언했다. 별도 validation-test 스타터는 현재 실습에 필요하지 않아 제외했다. 하위 라이브러리와 JUnit Jupiter 버전은 Spring Boot가 관리한다. 프리뷰·스냅샷 Spring Boot 의존성이나 별도 저장소는 사용하지 않는다.</p>
+<ul>
+<li><a href="https://spring.io/guides/gs/rest-service/" class="external-link">공식 REST 입문</a>: 요청과 Controller, JSON 응답을 읽는다.</li>
+<li><a href="https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-validation.html" class="external-link">Spring MVC 요청 검증</a>: <code>@Valid</code>와 요청 객체 검증을 확인한다.</li>
+<li><a href="https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html" class="external-link">Spring Boot 테스트</a>: 현재 Boot 4.1 문서의 테스트 설정과 패키지를 참고한다.</li>
+</ul>
+</section></article><nav class="document-bottom" aria-label="문서 이동"><a href="../../index.html">← 학습 시작 페이지</a><a href="REQUIREMENTS.html">API 요구사항 읽기 →</a></nav></main>
+</div><footer class="site-footer"><span>backend-lab · 직접 만들고, 검증하고, 기록하기</span><a href="#top">맨 위로 ↑</a></footer>
+<div class="sr-only" id="copy-status" role="status" aria-live="polite"></div>
+</body>
+</html>
