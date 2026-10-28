@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class ProductRepository {
@@ -15,11 +16,10 @@ public class ProductRepository {
         products.add(product);
     }
 
-    public Product findById(Long id) {
+    public Optional<Product> findById(Long id) {
         return products.stream()
                 .filter(product -> product.getId().equals(id))
-                .findFirst()
-                .orElse(null);
+                .findFirst();
     }
 
     public boolean existsById(Long id) {

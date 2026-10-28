@@ -5,7 +5,8 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
 
     ALREADY_EXISTS_PRODUCT_NAME(409, "이미 존재하는 상품명입니다."),
-    ALREADY_EXISTS_PRODUCT_ID(409, "이미 존재하는 상품ID입니다.");
+    ALREADY_EXISTS_PRODUCT_ID(409, "이미 존재하는 상품ID입니다."),
+    NOT_FOUND_PRODUCT(404, "존재하지 않는 상품입니다.");
 
     private final int code;
     private final String message;

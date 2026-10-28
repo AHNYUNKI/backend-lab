@@ -39,4 +39,11 @@ public class ProductService {
         return ProductResponse.from(product);
     }
 
+    public ProductResponse findProduct(Long id) {
+        Product findProduct = productRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(NOT_FOUND_PRODUCT));
+
+        return ProductResponse.from(findProduct);
+    }
+
 }
