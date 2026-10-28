@@ -15,6 +15,7 @@ import tools.jackson.databind.ObjectMapper;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -63,6 +64,38 @@ class ProductControllerTest {
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.code").value(ErrorCode.ALREADY_EXISTS_PRODUCT_NAME.getCode()))
                 .andExpect(jsonPath("$.message").value(ErrorCode.ALREADY_EXISTS_PRODUCT_NAME.getMessage()));
+    }
+
+    @Test
+    void 상품_조회_API() throws Exception {
+        // given
+        ProductCreateRequest request = ProductCreateRequest.of(1L, "test", 1000, 10);
+
+        given(productService.findProduct(1L))
+                .willReturn(ProductResponse.of(1L, "test", 1000, 10));
+
+        // when // then
+        mockMvc.perform(get("/v1/products/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.data.id").value(1))
+                .andExpect(jsonPath("$.data.name").value("test"))
+                .andExpect(jsonPath("$.data.price").value(1000))
+                .andExpect(jsonPath("$.data.stock").value(10));
+    }
+
+    @Test
+    void 상품_조회시_일치하는_상품이_없으면_HTTP_404와_에러_메시지를_반환한다() throws Exception {
+        // given
+        given(productService.findProduct(1L))
+                .willThrow(new BusinessException(ErrorCode.NOT_FOUND_PRODUCT));
+
+        // when // then
+        mockMvc.perform(get("/v1/products/1"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value(ErrorCode.NOT_FOUND_PRODUCT.getCode()))
+                .andExpect(jsonPath("$.message").value(ErrorCode.NOT_FOUND_PRODUCT.getMessage()));
+
     }
 
 }

@@ -75,4 +75,28 @@ class ProductServiceTest {
         assertThat(productRepository.existsById(secondRequest.getId())).isFalse();
     }
 
+    @Test
+    void 상품_ID로_단건_조회할_수_있다() {
+        // given
+        ProductCreateRequest request = ProductCreateRequest.of(1L, "조회용 상품", 1000, 10);
+        productService.createProduct(request);
+
+        // when
+        ProductResponse response = productService.findProduct(request.getId());
+
+        // then
+        assertThat(response.getId()).isEqualTo(request.getId());
+        assertThat(response.getName()).isEqualTo(request.getName());
+        assertThat(response.getPrice()).isEqualTo(request.getPrice());
+        assertThat(response.getStock()).isEqualTo(request.getStock());
+    }
+
+    @Test
+    void 존재하지않은_상품_ID로_조회하면_에러가_발생한다() {
+        // when // then
+        assertThatThrownBy(() -> productService.findProduct(1L))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.NOT_FOUND_PRODUCT.getMessage());
+    }
+
 }
