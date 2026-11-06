@@ -5,8 +5,10 @@ Java부터 Spring, SQL까지 직접 구현하고 테스트하며 배우는 백�
 
 ## 실습 안내
 
+- [Git Flow 작업·PR·AI 리뷰 안내](CONTRIBUTING.md)
 - [순수 Java 상품·재고 실습](java/01-product-inventory/README.md)
 - [Spring 첫 상품 API 실습 — 학습 계획과 시작 방법](spring/01-product-api/README.md)
+- [GoldGuard — AI vs Backend Developer 실습](spring/02-goldguard/README.md)
 
 ## 폴더 구조
 
