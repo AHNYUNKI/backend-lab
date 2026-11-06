@@ -10,7 +10,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -24,8 +26,9 @@ class DailyRewardClaimControllerTest {
     void 로그인한_계정이_유저계정이면_일일_보상_API에_접근이_가능하다() throws Exception{
         // given
         // when // then
-        mockMvc.perform(get("/api/v1/users/daily-reward")
-                        .with(httpBasic("user", "password")))
+        mockMvc.perform(post("/api/v1/users/daily-reward")
+                        .with(httpBasic("user", "password"))
+                        .with(csrf()))
                 .andExpect(status().isOk());
 
 
