@@ -9,5 +9,5 @@ import java.util.Optional;
 @Repository
 public interface DailyRewardClaimRepository extends JpaRepository<DailyRewardClaim, Long> {
 
-    Optional<DailyRewardClaim> findByUserNameAndClaimDate(String userName, LocalDate date);
+    Optional<DailyRewardClaim> findByUserNameAndRewardDate(String userName, LocalDate date);
 }

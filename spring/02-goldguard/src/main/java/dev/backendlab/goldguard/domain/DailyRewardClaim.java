@@ -1,9 +1,6 @@
 package dev.backendlab.goldguard.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,6 +11,15 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @NoArgsConstructor
+@Table(
+        name = "daily_reward_claim",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_daily_reward_claim_user_date",
+                        columnNames = {"user_name", "reward_date"}
+                )
+        }
+)
 public class DailyRewardClaim {
 
     @Id
@@ -22,21 +28,21 @@ public class DailyRewardClaim {
 
     private String userName;
 
-    private LocalDate claimDate;
+    private LocalDate rewardDate;
 
     private Integer rewardAmount;
 
     @Builder
-    private DailyRewardClaim(String userName, LocalDate claimDate, Integer rewardAmount) {
+    private DailyRewardClaim(String userName, LocalDate rewardDate, Integer rewardAmount) {
         this.userName = userName;
-        this.claimDate = claimDate;
+        this.rewardDate = rewardDate;
         this.rewardAmount = rewardAmount;
     }
 
-    public static DailyRewardClaim create(String userName, LocalDate claimDate, Integer rewardAmount) {
+    public static DailyRewardClaim create(String userName, LocalDate rewardDate, Integer rewardAmount) {
         return DailyRewardClaim.builder()
                 .userName(userName)
-                .claimDate(claimDate)
+                .rewardDate(rewardDate)
                 .rewardAmount(rewardAmount)
                 .build();
     }
