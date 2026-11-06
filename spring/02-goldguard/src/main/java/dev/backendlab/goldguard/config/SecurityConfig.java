@@ -21,7 +21,7 @@ public class SecurityConfig {
         return http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                HttpMethod.GET, "/api/v1/users/**"
+                                HttpMethod.POST, "/api/v1/users/**"
                         ).hasRole("USER")
                         .anyRequest().authenticated()
                 )
