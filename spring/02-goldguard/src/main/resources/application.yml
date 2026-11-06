@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: goldguard
+  config:
+    import: optional:file:.env[.properties]
+  profiles:
+    default: local
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+
+server:
+  port: ${SERVER_PORT:8082}

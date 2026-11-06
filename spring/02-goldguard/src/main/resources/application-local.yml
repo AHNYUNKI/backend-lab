@@ -1,0 +1,5 @@
+spring:
+  datasource:
+    url: jdbc:mysql://${DB_HOST:127.0.0.1}:${DB_PORT:13307}/${DB_NAME:goldguard}?sslMode=DISABLED&allowPublicKeyRetrieval=true&characterEncoding=UTF-8
+    username: ${DB_USERNAME:goldguard}
+    password: ${DB_PASSWORD}
