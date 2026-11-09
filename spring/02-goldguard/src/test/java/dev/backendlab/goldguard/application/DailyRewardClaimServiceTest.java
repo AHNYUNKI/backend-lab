@@ -1,6 +1,8 @@
 package dev.backendlab.goldguard.application;
 
 import dev.backendlab.goldguard.domain.DailyRewardClaimRepository;
+import dev.backendlab.goldguard.exception.BusinessException;
+import dev.backendlab.goldguard.exception.ErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +64,15 @@ class DailyRewardClaimServiceTest {
         dailyRewardClaimService.claimDailyReward(userName, now);
 
         // when // then
-        assertThrows(IllegalStateException.class, () -> dailyRewardClaimService.claimDailyReward(userName, now));
+        BusinessException exception = assertThrows(
+                BusinessException.class,
+                () -> dailyRewardClaimService.claimDailyReward(userName, now)
+        );
+
+        assertEquals(
+                ErrorCode.REWARD_ALREADY_CLAIMED,
+                exception.getErrorCode()
+        );
 
     }
 
